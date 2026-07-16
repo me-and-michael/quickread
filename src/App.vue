@@ -1,7 +1,11 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+
+import wordFlasher from "./components/wordFlasher.vue"
+
+</script>
 
 <template>
-  <h1>You did it!</h1>
+  <wordFlasher/>
 </template>
 
 <style scoped></style>
