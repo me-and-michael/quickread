@@ -1,18 +1,31 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 
 const index = ref(0)
 const playing = ref(false)
 
 const wpm = ref(100)
 const interval = computed(() => {
-  return 1 / (wpm.value * 60 * 1000)
+  return (60*1000)/(wpm.value || 1)
 })
-const wordLoop = setInterval(() => {
-  if (playing.value) {
-    index.value++
+let wordLoop = null
+onMounted(() => {
+  if (wordLoop) {
+    clearInterval(wordLoop)
+    wordLoop = null
   }
-}, interval)
+  wordLoop = setInterval(() => {
+    if (playing.value) {
+      index.value++
+    }
+  }, interval.value)
+})
+onBeforeUnmount(() => {
+  if (wordLoop) {
+    clearInterval(wordLoop)
+    wordLoop = null
+  }
+})
 
 function back() {
   index.value--
@@ -26,14 +39,14 @@ function forward() {
   index.value++
 }
 
-onMounted(() => {
-  setInterval(() => {}, interval.value)
-})
+// onMounted(() => {
+//   setInterval(() => {}, interval.value)
+// })
 </script>
 
 <template>
   <p>wordindex: {{ index }}</p>
-  <p>wpm: {{ wpm }}</p>
+  <p>wpm: {{ wpm }} interval: {{ interval }}</p>
 
   <form @submit.prevent>
     <button @click="back">
