@@ -55,12 +55,12 @@ function startstop() {
   playing.value = !playing.value
 }
 function backwards() {
-  if (wordIndex.value === 0) return
+  if (wordIndex.value <= 0) return
   playing.value = false
   wordIndex.value--
 }
 function forwards() {
-  if (wordIndex.value === words.value.length - 1) return
+  if (wordIndex.value >= words.value.length - 1) return
   playing.value = false
   wordIndex.value++
 }
