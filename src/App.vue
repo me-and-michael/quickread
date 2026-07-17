@@ -30,6 +30,9 @@ function setWordLoop(time: number) {
     if (playing.value) {
       wordIndex.value++
     }
+    if (wordIndex.value >= words.value.length - 1) {
+      clearWordLoop();
+    }
   }, time)
 }
 onMounted(() => {
