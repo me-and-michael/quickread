@@ -83,4 +83,20 @@ function forwards() {
     @change-wpm="changeWPM"
     @change-index="changeIndex"
   />
+  <div class="line" ></div>
 </template>
+
+<style>
+.line {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  z-index: -1;
+  top: 35vh;
+  height: 25%;
+  width: 50%;
+  left: 50%;
+  border-left: 10px solid darkgray;
+}
+</style>
