@@ -1,7 +1,13 @@
 <script setup lang="ts">
 import { useTemplateRef } from 'vue'
 
-const emit = defineEmits(["backwards", "startstop", "forwards", "changeWpm", "changeIndex"])
+const emit = defineEmits<{
+  (e : "backwards") : void,
+  (e : "startstop") : void,
+  (e : "forwards") : void,
+  (e : "changeWpm", value : number) : void,
+  (e : "changeIndex", value : number) : void
+}>();
 
 interface propsInterface {
   playing : boolean,
@@ -11,18 +17,28 @@ interface propsInterface {
 }
 const props = defineProps<propsInterface>();
 
+let lastPlayingState = false;
+
 const wpmInput = useTemplateRef('wpm');
 const indexInput = useTemplateRef('currentIndex');
 function emitWPM() {
+  if (!wpmInput.value) return
   stop();
-  emit('changeWpm', wpmInput.value?.value);
+  emit('changeWpm', wpmInput.value.valueAsNumber);
 }
 function emitIndex() {
+  if (!indexInput.value) return;
   stop();
-  emit('changeIndex', indexInput.value?.value);
+  emit('changeIndex', indexInput.value.valueAsNumber);
 }
 function stop() {
+  lastPlayingState = props.playing;
   if (props.playing) emit('startstop');
+}
+
+function continuePreviousPlayingState() {
+  if (props.playing == lastPlayingState) return;
+  emit('startstop');
 }
 
 </script>
@@ -42,8 +58,24 @@ function stop() {
       </button>
     </form> <!-- separated forms as for some reason, when pressing enter on input with type number, backwards is emitted-->
     <form @submit.prevent>
-      WPM: <input ref="wpm" type="number" min="0" :value="props.wpm" @change="emitWPM" @focusin="stop"/>
-      CurrentIndex: <input ref="currentIndex" type="number" min="0" :max="props.maxWordIndex" :value="props.currentIndex" @change="emitIndex" @focusin="stop"/>
+      WPM: <input
+        ref="wpm"
+        type="number"
+        min="0"
+        :value="props.wpm"
+        @change="emitWPM"
+        @focusin="stop"
+        @focusout="continuePreviousPlayingState"/>
+      CurrentIndex: <input
+        ref="currentIndex"
+        type="number"
+        min="0"
+        :max="props.maxWordIndex"
+        :value="props.currentIndex"
+        @change="emitIndex"
+        @focusin="stop"
+        @focusout="continuePreviousPlayingState"
+        />
     </form>
   </div>
 </template>

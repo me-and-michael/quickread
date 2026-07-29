@@ -1,18 +1,28 @@
 <script setup lang="ts">
+import { computed } from "vue"
 
 interface propsInterface {
   playing : boolean,
-  words : string[],
   wordIndex : number
 }
 const props = defineProps<propsInterface>();
+const emit = defineEmits(["wordCount"]);
 
+const text = defineModel("text", {
+  required:true,
+  type:String
+});
 
+const words = computed(function(){
+  const split = text.value.split(/[ ]/)
+  emit("wordCount", split.length)
+  return split
+})
 
 </script>
 
 <template>
-  <p> {{ props.words[props.wordIndex] }} </p>
+  <p> {{ words[props.wordIndex] }} </p>
   <label>wordindex: {{ props.wordIndex }}</label>
 </template>
 
