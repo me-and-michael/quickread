@@ -82,8 +82,8 @@ function continuePreviousPlayingState() {
 
 <style scoped>
 div {
-  display:flex;
-  justify-content:center;
+  display:block;
+  text-align:center;
 }
 </style>
 
