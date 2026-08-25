@@ -1,0 +1,108 @@
+<script setup lang="ts">
+import WordComponent from './components/WordComponent.vue'
+import ControlsComponent from './components/ControlsComponent.vue'
+import TextComponent from './components/TextComponent.vue'
+
+import { computed, ref, onMounted, onBeforeUnmount } from 'vue'
+import { createRouter } from 'vue-router'
+type Interval = number | null
+
+const text = ref('is that MY handsome, elegant, intelligent, charming, kind, thoughtful, strong, courageous, creative, brilliant, gentle, humble, generous, passionate, wise, funny, loyal, dependable, graceful, radiant, calm, confident, warm, compassionate, witty, adventurous, respectful, sincere, magnetic, bold, articulate, empathetic, inspiring, honest, patient, powerful, attentive, uplifting, classy, friendly, reliable, ambitious, intuitive, talented, supportive, grounded, determined, charismatic, extraordinary, trustworthy, noble, dignified, perceptive, innovative, refined, considerate, balanced, open-minded, composed, imaginative, mindful, optimistic, virtuous, noble-hearted, well-spoken, quick-witted, deep, philosophical, fearless, affectionate, expressive, emotionally intelligent, resourceful, delightful, fascinating, sharp, selfless, driven, assertive, authentic, vibrant, playful, observant, skillful, generous-spirited, practical, comforting, brave, wise-hearted, enthusiastic, dependable, tactful, enduring, discreet, well-mannered, composed, mature, tasteful, joyful, understanding, genuine, brilliant-minded, encouraging, well-rounded, magnetic, dynamic, radiant, radiant-spirited, soulful, radiant-hearted, insightful, creative-souled, justice-minded, reliable-hearted, tender, uplifting-minded, persevering, devoted, angelic, down-to-earth, golden-hearted, gentle-spirited, clever, courageous-hearted, courteous, harmonious, loyal-minded, beautiful-souled, easygoing, sincere-hearted, respectful-minded, comforting-voiced, confident-minded, emotionally strong, respectful-souled, imaginative-hearted, protective, noble-minded, confident-souled, wise-eyed, loving, serene, magnetic-souled, expressive-eyed, brilliant-hearted, inspiring-minded, unforgettable, glorious, elegant, intelligent, charming, kind, thoughtful, strong, courageous, creative, brilliant, gentle, generous, passionate, funny, loyal, dependable, graceful, radiant, calm, confident, warm, witty, yeraly baimagambetov from almaty kazakhstan??',);
+
+const playing = ref(false)
+const wordIndex = ref(0)
+const wordCount = ref(1)
+
+const wpm = ref(100)
+const interval = computed(() => {
+  return (60 * 1000) / (wpm.value || 1)
+})
+
+let wordLoop: Interval = null
+function clearWordLoop() {
+  if (wordLoop) {
+    clearInterval(wordLoop)
+    wordLoop = null
+  }
+}
+function setWordLoop(time: number) {
+  wordLoop = setInterval(() => {
+    if (wordIndex.value >= wordCount.value - 1) {
+      playing.value = false;
+    }
+    if (playing.value) {
+      wordIndex.value++
+    }
+  }, time)
+}
+onMounted(() => {
+  clearWordLoop()
+  setWordLoop(interval.value)
+})
+onBeforeUnmount(clearWordLoop)
+
+function changeWPM(newWPM: number) {
+  wpm.value = newWPM;
+  clearWordLoop();
+  setWordLoop(interval.value);
+}
+
+function changeIndex(newIndex : number) {
+  if (newIndex < 0 || newIndex >= wordCount.value) return;
+  wordIndex.value = newIndex;
+}
+
+function stop() {
+  playing.value = false
+}
+
+function startstop() {
+  playing.value = !playing.value
+}
+
+function backwards() {
+  if (wordIndex.value <= 0) return
+  playing.value = false
+  wordIndex.value--
+}
+function forwards() {
+  if (wordIndex.value >= wordCount.value - 1) return
+  playing.value = false
+  wordIndex.value++
+}
+</script>
+
+<template>
+  <div class="word-box">
+  </div>
+  <WordComponent
+    v-model:text="text"
+    :playing="playing"
+    :word-index="wordIndex"
+    @wordCount="(count : number) => wordCount = count"
+  />
+  <ControlsComponent
+    :playing="playing"
+    :wpm="wpm"
+    :max-word-index="wordCount - 1"
+    :current-index="wordIndex"
+    @backwards="backwards"
+    @startstop="startstop"
+    @forwards="forwards"
+    @change-wpm="changeWPM"
+    @change-index="changeIndex"
+  />
+  
+  
+  <!--<TextComponent
+    v-model="text"
+    @resetIndex="changeIndex(0)"
+    @update:model-value="stop"
+  />-->
+</template>
+
+<style>
+body{
+  background-color: rgba(26, 26, 26, 1);
+}
+</style>
