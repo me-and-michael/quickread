@@ -72,6 +72,8 @@ function forwards() {
 </script>
 
 <template>
+  <div class="word-box">
+  </div>
   <WordComponent
     v-model:text="text"
     :playing="playing"
@@ -89,26 +91,18 @@ function forwards() {
     @change-wpm="changeWPM"
     @change-index="changeIndex"
   />
-  <div class="line" ></div>
   
-  <TextComponent
+  
+  <!--<TextComponent
     v-model="text"
     @resetIndex="changeIndex(0)"
     @update:model-value="stop"
-  />
+  />-->
 </template>
 
 <style>
-.line {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: absolute;
-  z-index: -1;
-  top: 35vh;
-  height: 25%;
-  width: 50%;
-  left: 50%;
-  border-left: 10px solid darkgray;
+@import url('https://fonts.googleapis.com/css2?family=Hammersmith+One&display=swap');
+body{
+  background-color: rgba(26, 26, 26, 1);
 }
 </style>
