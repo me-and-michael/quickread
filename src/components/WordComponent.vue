@@ -1,25 +1,13 @@
 <script setup lang="ts">
 import { computed } from "vue"
 
-interface propsInterface {
-  playing : boolean,
-  wordIndex : number
-}
-const props = defineProps<propsInterface>();
-const emit = defineEmits(["wordCount"]);
-
-const text = defineModel("text", {
+const text = defineModel("word", {
   required:true,
   type:String
 });
 
-const words = computed(function(){
-  const split = text.value.split(/[ ]/)
-  emit("wordCount", split.length)
-  return split
-})
 
-const currentWord = computed(() => words.value[props.wordIndex] ?? '')
+const currentWord = computed(() => text.value ?? '')
 const middleIndex = computed(() => {
   if (currentWord.value.length == 2) return 1;
   else if (currentWord.value.length == 3) return 1;
