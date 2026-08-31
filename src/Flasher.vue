@@ -48,6 +48,7 @@ async function updateWordLengths() {
   }
   longestWordLen.value = longest;
   shortestWordLen.value = shortest;
+  console.log(longest, shortest);
 }
 watch(words, updateWordLengths);
 onMounted(updateWordLengths);
@@ -62,9 +63,9 @@ const interval = computed(() : number => {
   if (wpm.value > 0) {
     const lastChar = currentWord.value.at(-1);
     const punctDelayMult : number = PUNCTUATION_DELAY_MULTIPLIER(lastChar);
-    const wordLengthMult = (((currentWord.value.length - shortestWordLen.value)/(longestWordLen.value - shortestWordLen.value)) + 0.5)
-    const rampUpMult = Math.max(1, (4*wordIndex.value)/wordCount.value) + 0.1
-    return rampUpMult * punctDelayMult*wordLengthMult * ((60 * 1000) / wpm.value);
+    const wordLengthMult = longestWordLen.value !== shortestWordLen.value ? (((currentWord.value.length - shortestWordLen.value)/(longestWordLen.value - shortestWordLen.value)) + 0.5) : 1
+    const rampUpMult = 1 / (Math.max(1, (4*wordIndex.value)/wordCount.value) + 0.1);
+    return rampUpMult*punctDelayMult*wordLengthMult * ((60 * 1000) / wpm.value);
   }
   // eslint-disable-next-line vue/no-side-effects-in-computed-properties
   playing.value = false // this part only ever runs should wpm.value be set to 0, which should not be allowed anyways
