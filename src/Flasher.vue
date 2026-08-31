@@ -4,7 +4,7 @@ import ControlsComponent from './components/ControlsComponent.vue'
 import TextComponent from './components/TextComponent.vue'
 
 import { computed, ref, onMounted, watch} from 'vue'
-import { createRouter } from 'vue-router'
+// import { createRouter } from 'vue-router'
 
 const DEFAULT_INTERVAL = 100;
 const DEFAULT_TEXT = 'is that MY handsome, elegant, intelligent, charming, kind, thoughtful, strong, courageous, creative, brilliant, gentle, humble, generous, passionate, wise, funny, loyal, dependable, graceful, radiant, calm, confident, warm, compassionate, witty, adventurous, respectful, sincere, magnetic, bold, articulate, empathetic, inspiring, honest, patient, powerful, attentive, uplifting, classy, friendly, reliable, ambitious, intuitive, talented, supportive, grounded, determined, charismatic, extraordinary, trustworthy, noble, dignified, perceptive, innovative, refined, considerate, balanced, open-minded, composed, imaginative, mindful, optimistic, virtuous, noble-hearted, well-spoken, quick-witted, deep, philosophical, fearless, affectionate, expressive, emotionally intelligent, resourceful, delightful, fascinating, sharp, selfless, driven, assertive, authentic, vibrant, playful, observant, skillful, generous-spirited, practical, comforting, brave, wise-hearted, enthusiastic, dependable, tactful, enduring, discreet, well-mannered, composed, mature, tasteful, joyful, understanding, genuine, brilliant-minded, encouraging, well-rounded, magnetic, dynamic, radiant, radiant-spirited, soulful, radiant-hearted, insightful, creative-souled, justice-minded, reliable-hearted, tender, uplifting-minded, persevering, devoted, angelic, down-to-earth, golden-hearted, gentle-spirited, clever, courageous-hearted, courteous, harmonious, loyal-minded, beautiful-souled, easygoing, sincere-hearted, respectful-minded, comforting-voiced, confident-minded, emotionally strong, respectful-souled, imaginative-hearted, protective, noble-minded, confident-souled, wise-eyed, loving, serene, magnetic-souled, expressive-eyed, brilliant-hearted, inspiring-minded, unforgettable, glorious, elegant, intelligent, charming, kind, thoughtful, strong, courageous, creative, brilliant, gentle, generous, passionate, funny, loyal, dependable, graceful, radiant, calm, confident, warm, witty, yeraly baimagambetov from almaty kazakhstan??';
@@ -24,13 +24,12 @@ function PUNCTUATION_DELAY_MULTIPLIER(char : string | undefined) {
 }
 
 const text = ref(DEFAULT_TEXT);
-const words = computed(() : string[] => text.value.split(/[ ]/));
+const words = computed(() : string[] => text.value.split(/[ \n]/).filter((x) => x !== ""));
 const wordCount = computed(() => words.value.length);
 
 function getWordAtIndex(index : number) : string {
   if (index >= wordCount.value) throw "index out of bound"
   const word = words.value[index];
-
   if (typeof word === "undefined") throw "undefined at index "+index.toString();
 
   return word
@@ -59,11 +58,13 @@ const playing = ref(false)
 
 
 const wpm = ref(DEFAULT_INTERVAL)
-const interval = computed(() => {
+const interval = computed(() : number => {
   if (wpm.value > 0) {
     const lastChar = currentWord.value.at(-1);
     const punctDelayMult : number = PUNCTUATION_DELAY_MULTIPLIER(lastChar);
-    return punctDelayMult*(((currentWord.value.length - shortestWordLen.value)/(longestWordLen.value - shortestWordLen.value)) + 0.5) * ((60 * 1000) / wpm.value);
+    const wordLengthMult = (((currentWord.value.length - shortestWordLen.value)/(longestWordLen.value - shortestWordLen.value)) + 0.5)
+    const rampUpMult = Math.max(1, (4*wordIndex.value)/wordCount.value) + 0.1
+    return rampUpMult * punctDelayMult*wordLengthMult * ((60 * 1000) / wpm.value);
   }
   // eslint-disable-next-line vue/no-side-effects-in-computed-properties
   playing.value = false // this part only ever runs should wpm.value be set to 0, which should not be allowed anyways
@@ -78,6 +79,7 @@ function startLoop() {
       return;
     }
     wordIndex.value++;
+    console.log(interval.value)
     setTimeout(nextWord, interval.value)
   }
   setTimeout(nextWord, interval.value)
@@ -131,12 +133,11 @@ function forwards() {
     @change-index="changeIndex"
   />
 
-<!--
   <TextComponent
     v-model="text"
     @resetIndex="changeIndex(0)"
     @update:model-value="stop"
-  /> -->
+  />
 </template>
 
 <style>
