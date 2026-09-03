@@ -57,7 +57,7 @@ const rightSide = computed(() => {
   width: auto;
   height: 7vh;
   position: absolute;
-  bottom: 43vh;
+  bottom: 44vh;
   border-left: 1vh solid rgba(54, 54, 54, 1);
 }
 
