@@ -1,5 +1,5 @@
-<script setup lang="ts">  
-import { computed, ref, onMounted, onBeforeUnmount } from 'vue'
+<script setup lang="ts">
+import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 import TextComponent from './components/TextComponent.vue'
@@ -39,7 +39,7 @@ function goToFlasher() {
     </div>
   </main>
 </template>
-<style> 
+<style>
 body{
   background-color: rgba(26, 26, 26, 1);
   overflow-x: hidden;

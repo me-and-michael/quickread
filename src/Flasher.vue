@@ -64,9 +64,9 @@ const interval = computed(() : number => {
   if (wpm.value > 0) {
     const lastChar = currentWord.value.at(-1);
     const punctDelayMult : number = PUNCTUATION_DELAY_MULTIPLIER(lastChar);
-    const wordLengthMult = longestWordLen.value !== shortestWordLen.value ? (((currentWord.value.length - shortestWordLen.value)/(longestWordLen.value - shortestWordLen.value)) + 0.5) : 1
+    const wordLengthMult = longestWordLen.value !== shortestWordLen.value ? (((currentWord.value.length - shortestWordLen.value)/(longestWordLen.value - shortestWordLen.value))) : 1
     const rampUpMult = 2 - Math.min(1, (4*wordIndex.value)/wordCount.value);
-    return rampUpMult*punctDelayMult*wordLengthMult * ((60 * 1000) / wpm.value);
+    return rampUpMult*punctDelayMult*Math.max(1, wordLengthMult**2) * ((60 * 1000) / wpm.value);
   }
   // eslint-disable-next-line vue/no-side-effects-in-computed-properties
   playing.value = false // this part only ever runs should wpm.value be set to 0, which should not be allowed anyways
