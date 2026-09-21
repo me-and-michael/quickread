@@ -8,6 +8,17 @@ const text = defineModel("word", {
 
 
 const currentWord = computed(() => text.value ?? '')
+const fontSize = computed(() => {
+  const size = 'Math.clamp(2em, 5vw, 10em)';
+  if(currentWord.value.length > 35)
+  {
+    return (5/(currentWord.value.length/35))+`vw`;
+  }
+  else
+  {
+    return size;
+  }
+})
 const middleIndex = computed(() => {
   if (currentWord.value.length == 2) return 1;
   else if (currentWord.value.length == 3) return 1;
@@ -30,13 +41,13 @@ const rightSide = computed(() => {
 
 <template>
   <div class="word-row">
-    <span class="left">{{ leftSide }}</span>
-    <span class="special">
+    <span class="left" :style="{ fontSize }">{{ leftSide }}</span>
+    <span class="special" :style="{ fontSize }">
       {{ middleLetter }}
       <div class="line"></div>
       <div class="line2"></div>
     </span>
-    <span class="right">{{ rightSide }}</span>
+    <span class="right" :style="{ fontSize }">{{ rightSide }}</span>
   </div>
 </template>
 
@@ -67,7 +78,7 @@ span {
   justify-content: center;
   height: 25vh;
   line-height: 1;
-  font-size: clamp(2em, 10vmin, 10em);
+  font-size: clamp(2em, 5vw, 10em);
   color: rgba(239, 239, 239, 1);
   background-color: rgba(26, 26, 26, 1);
   font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;

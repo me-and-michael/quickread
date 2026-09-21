@@ -83,7 +83,7 @@ p{
   flex-direction: column;
   border: 1px solid rgba(54, 54, 54, 1);
   background-color: rgba(35, 35, 35, 1);
-  width: clamp(200px, 50%, 4000px);
+  width: clamp(200px, 70%, 800px);
   border-radius: 20px;
 }
 .upload-file{
@@ -131,5 +131,15 @@ p{
   color: rgba(180, 180, 180, 1);
   cursor: not-allowed;
   opacity: 0.6;
+}
+
+@media (max-width: 700px) {
+  aside {
+    display: none;
+  }
+
+  main {
+    left: 0;
+  }
 }
 </style>
