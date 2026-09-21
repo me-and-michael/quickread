@@ -1,12 +1,20 @@
 <script setup lang="ts">
-import { useTemplateRef } from 'vue'
+import { useTemplateRef, onMounted, onBeforeUnmount} from 'vue'
+
+enum Emits {
+  Backwards = "backwards",
+  Forwards = "forwards",
+  StartStop = "startstop",
+  ChangeWpm = "changeWpm",
+  ChangeIndex = "changeIndex"
+}
 
 const emit = defineEmits<{
-  (e : "backwards") : void,
-  (e : "startstop") : void,
-  (e : "forwards") : void,
-  (e : "changeWpm", value : number) : void,
-  (e : "changeIndex", value : number) : void
+  (e : Emits.Backwards) : void,
+  (e : Emits.StartStop) : void,
+  (e : Emits.Forwards) : void,
+  (e : Emits.ChangeWpm, value : number) : void,
+  (e : Emits.ChangeIndex, value : number) : void
 }>();
 
 interface propsInterface {
@@ -17,43 +25,59 @@ interface propsInterface {
 }
 const props = defineProps<propsInterface>();
 
+const keybinds = {
+  "ArrowLeft" : Emits.Backwards,
+  "ArrowRight" : Emits.Forwards,
+  "ArrowUp" : Emits.Backwards,
+  "ArrowDown" : Emits.Forwards,
+  " " : Emits.StartStop
+}
+
 let lastPlayingState = false;
 
 const wpmInput = useTemplateRef('wpm');
 const indexInput = useTemplateRef('currentIndex');
 function emitWPM() {
   if (!wpmInput.value) return
-  stop();
-  emit('changeWpm', wpmInput.value.valueAsNumber);
+  emit(Emits.ChangeWpm, wpmInput.value.valueAsNumber);
 }
 function emitIndex() {
   if (!indexInput.value) return;
-  stop();
-  emit('changeIndex', indexInput.value.valueAsNumber);
+  emit(Emits.ChangeIndex, indexInput.value.valueAsNumber);
 }
 function stop() {
   lastPlayingState = props.playing;
-  if (props.playing) emit('startstop');
+  if (props.playing) emit(Emits.StartStop);
 }
 
 function continuePreviousPlayingState() {
-  if (props.playing == lastPlayingState) return;
-  emit('startstop');
+  if (props.playing === lastPlayingState) return;
+  emit(Emits.StartStop);
 }
+
+ // @ts-expect-error: keybinds table will always only output Emits enum values, which is used to directly define emits.
+const handleKeyDown = (event : KeyboardEvent) => (event.key in keybinds) ? emit(keybinds[event.key]) : undefined
+
+onMounted(() => {
+  window.addEventListener("keydown", handleKeyDown)
+})
+onBeforeUnmount(() => {
+  window.removeEventListener("keydown", handleKeyDown)
+})
 
 </script>
 
 <template>
   <div>
     <form @submit.prevent>
-      <button @click="emit('backwards')">
+      <button @click="emit(Emits.Backwards)">
         <fa-icon icon="fa-solid fa-backward-step" class="icon" />
       </button>
-      <button @click="emit('startstop')">
+      <button @click="emit(Emits.StartStop)">
         <fa-icon v-if="props.playing" icon="fa-solid fa-pause" class="icon" />
         <fa-icon v-else icon="fa-solid fa-play" class="icon" />
       </button>
-      <button @click="emit('forwards')">
+      <button @click="emit(Emits.Forwards)">
         <fa-icon icon="fa-solid fa-forward-step" class="icon" />
       </button>
     </form> <!-- separated forms as for some reason, when pressing enter on input with type number, backwards is emitted-->

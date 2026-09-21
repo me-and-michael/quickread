@@ -49,7 +49,6 @@ async function updateWordLengths() {
   }
   longestWordLen.value = longest;
   shortestWordLen.value = shortest;
-  console.log(longest, shortest);
 }
 watch(words, updateWordLengths);
 onMounted(updateWordLengths);
